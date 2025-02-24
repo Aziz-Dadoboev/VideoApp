@@ -16,6 +16,9 @@ class VideoRepository @Inject constructor(
     private val _videos = MutableStateFlow<List<VideoItem>>(emptyList())
     val videos: StateFlow<List<VideoItem>> = _videos.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
     suspend fun fetchVideos() {
         try {
             val response = pexelsApi.getPopularVideos(apiKey)
@@ -29,8 +32,10 @@ class VideoRepository @Inject constructor(
                     duration = formatDuration(video.duration)
                 )
             }
+            _errorMessage.value = null
         } catch (e: Exception) {
             Log.e("VideoRepository", "Ошибка загрузки видео: ${e.message}")
+            _errorMessage.value = "Ошибка загрузки данных: ${e.message}"
         }
     }
 

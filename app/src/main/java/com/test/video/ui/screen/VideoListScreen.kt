@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,21 +30,46 @@ import coil.compose.AsyncImage
 import com.test.video.data.VideoItem
 import com.test.video.ui.MainViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoListScreen(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
     val videoItems by viewModel.videos.collectAsState(emptyList())
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        items(videoItems) { item ->
-            VideoListItem(video = item) {
-                navController.navigate("video_player/${Uri.encode(item.contentUri)}")
+    val refreshVideos = {
+        viewModel.fetchVideos()
+    }
+
+    if (errorMessage != null) {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { refreshVideos() },
+            modifier = Modifier
+        ) {
+            ErrorScreen(message = errorMessage ?: "Неизвестная ошибка") {
+                viewModel.fetchVideos()
+            }
+        }
+    } else {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { refreshVideos() },
+            modifier = Modifier
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                items(videoItems) { item ->
+                    VideoListItem(video = item) {
+                        navController.navigate("video_player/${Uri.encode(item.contentUri)}")
+                    }
+                }
             }
         }
     }

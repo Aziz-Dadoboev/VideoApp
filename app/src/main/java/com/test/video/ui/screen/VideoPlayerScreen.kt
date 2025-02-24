@@ -1,5 +1,6 @@
 package com.test.video.ui.screen
 
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,10 +24,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.test.video.ui.MainViewModel
 
+@OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayerScreen(
     videoUrl: String,
@@ -48,8 +52,9 @@ fun VideoPlayerScreen(
     }
 
     LaunchedEffect(videoUrl) {
-        viewModel.playVideo(videoUrl)
-        viewModel.player.playWhenReady = true
+        if (videoUrl != viewModel.currentVideoUrl) {
+            viewModel.playVideo(videoUrl)
+        }
     }
 
     Column(
@@ -57,6 +62,7 @@ fun VideoPlayerScreen(
     ) {
         AndroidView(
             factory = { context ->
+                Log.d("PlayerView", "PlayerView is created")
                 PlayerView(context).apply {
                     player = viewModel.player
                 }
@@ -64,10 +70,13 @@ fun VideoPlayerScreen(
             update = {
                 when (lifecycleEvent) {
                     Lifecycle.Event.ON_PAUSE -> {
+                        viewModel.saveState()
                         it.player?.pause()
                     }
                     Lifecycle.Event.ON_RESUME -> {
-                        it.player?.play()
+                        if (viewModel.isPlaying) {
+                            it.player?.play()
+                        }
                     }
                     else -> Unit
                 }
