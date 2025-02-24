@@ -1,4 +1,4 @@
-package com.test.video
+package com.test.video.data
 
 import android.os.Parcelable
 import androidx.media3.common.MediaItem

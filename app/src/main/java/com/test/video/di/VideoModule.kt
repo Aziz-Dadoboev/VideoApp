@@ -1,4 +1,4 @@
-package com.test.video
+package com.test.video.di
 
 import android.app.Application
 import androidx.annotation.OptIn
@@ -20,6 +20,7 @@ object VideoModule {
     @ViewModelScoped
     fun providesVideoPlayer(app: Application): Player {
         return ExoPlayer.Builder(app)
+            .setUseLazyPreparation(true)
             .build()
     }
 }

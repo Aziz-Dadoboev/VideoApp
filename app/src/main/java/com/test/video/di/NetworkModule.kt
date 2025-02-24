@@ -1,5 +1,6 @@
-package com.test.video
+package com.test.video.di
 
+import com.test.video.data.PexelsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,23 +1,31 @@
-package com.test.video
+package com.test.video.ui.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.MediaItem
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
+import com.test.video.ui.MainViewModel
 
 @Composable
 fun VideoPlayerScreen(
@@ -39,15 +47,17 @@ fun VideoPlayerScreen(
         }
     }
 
+    LaunchedEffect(videoUrl) {
+        viewModel.playVideo(videoUrl)
+        viewModel.player.playWhenReady = true
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         AndroidView(
             factory = { context ->
                 PlayerView(context).apply {
-                    viewModel.player.setMediaItem(MediaItem.fromUri(videoUrl))
-                    viewModel.player.prepare()
-                    viewModel.player.playWhenReady = true
                     player = viewModel.player
                 }
             },
@@ -63,15 +73,19 @@ fun VideoPlayerScreen(
                 }
             },
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .aspectRatio(16 / 9f)
         )
-//        Spacer(modifier = Modifier.height(8.dp))
-//        Button(
-//            onClick = { navController.popBackStack() },
-//            modifier = Modifier.align(Alignment.CenterHorizontally)
-//        ) {
-//            Text("Назад к списку")
-//        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                navController.popBackStack()
+                viewModel.player.release()
+            },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text("Назад к списку")
+        }
     }
 }

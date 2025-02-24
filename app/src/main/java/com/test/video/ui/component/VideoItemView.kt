@@ -1,4 +1,4 @@
-package com.test.video
+package com.test.video.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.test.video.data.VideoItem
 
 @Composable
 fun VideoItemView(
@@ -60,7 +61,7 @@ fun VideoItemView(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "${item.duration}",
+                text = item.duration,
                 fontSize = 14.sp,
                 color = Color.Gray
             )

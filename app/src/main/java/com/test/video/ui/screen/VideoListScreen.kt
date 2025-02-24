@@ -1,4 +1,4 @@
-package com.test.video
+package com.test.video.ui.screen
 
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -15,8 +15,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -25,13 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.test.video.data.VideoItem
+import com.test.video.ui.MainViewModel
 
 @Composable
 fun VideoListScreen(
     navController: NavController
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
-    val videoItems by viewModel.videos.observeAsState(emptyList())
+    val videoItems by viewModel.videos.collectAsState(emptyList())
 
     LazyColumn(
         modifier = Modifier
@@ -47,7 +49,10 @@ fun VideoListScreen(
 }
 
 @Composable
-fun VideoListItem(video: VideoItem, onClick: () -> Unit) {
+fun VideoListItem(
+    video: VideoItem,
+    onClick: () -> Unit
+) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
